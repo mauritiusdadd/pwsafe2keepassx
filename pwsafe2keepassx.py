@@ -21,6 +21,8 @@ class Converter(object):
         root = doc.createElement('database')
         doc.appendChild(root)
 
+        groups = {}
+
         for line in data:
 
             if '"' not in line:
@@ -32,19 +34,23 @@ class Converter(object):
                 continue
 
             # uuid = fields[0].strip('"') # unused
-            group = fields[1].strip('" ')
+            grpname = fields[1].strip('" ')
             name = fields[2].strip('" ')
             login = fields[3].strip('" ')
             passwd = fields[4].strip('" ')
             notes = fields[5].strip('" \n')
 
-            group_node = doc.createElement('group')
-            root.appendChild(group_node)
+            if grpname in groups:
+                group_node = groups[grpname]
+            else:
+                group_node = doc.createElement('group')
+                root.appendChild(group_node)
+                groups[grpname] = group_node
 
             # <group>
             group_title_node = doc.createElement('title')
             group_node.appendChild(group_title_node)
-            group_title_node.appendChild(doc.createTextNode(group))
+            group_title_node.appendChild(doc.createTextNode(grpname))
 
             # one <entry> per <group>
             entry_node = doc.createElement('entry')
